@@ -1,4 +1,6 @@
 import React from "react";
+import { Checkbox, Typography, IconButton } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function Todo({ todo, toggleComplete, removeTodo }) {
     function handleCheckboxClick() {
@@ -10,16 +12,26 @@ function Todo({ todo, toggleComplete, removeTodo }) {
     }
 
     return(
-        <div style = {{display: "flex"}}>
-            <input type="checkbox" onClick={handleCheckboxClick}/>
-            <li style = {{
-                color: todo.completed ? "Red" : "white",
-                textDecoration: todo.completed ? "line-through" : null
-            }} >
-                {todo.task}
-            </li>
-
-            <button onClick={handleRemoveClick}>X</button>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
+            <Checkbox checked={todo.completed} onChange={handleCheckboxClick} sx={{
+                    color: "primary",
+                    '&.Mui-checked': {
+                        color: "secondary" 
+                    }
+            }}/>
+            <Typography
+                variant="body1"
+                style={{
+                    textDecoration: todo.completed ? "line-through" : "none",
+                    color: todo.completed ? "secondary" : "primary"
+                }}
+            >
+            {todo.task}
+            </Typography>
+            
+            <IconButton onClick={handleRemoveClick} sx={{ color: "primary" }}>
+                <DeleteIcon />
+            </IconButton>
         </div>
     )
 }

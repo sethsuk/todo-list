@@ -3,11 +3,13 @@ import Todo from "./Todo";
 
 function TodoList({ todos, toggleComplete, removeTodo }) {
     return(
-        <ul style={{ listStyle: 'none' }}>
-            {todos.map(todo => (
-                <Todo todo={todo} toggleComplete={toggleComplete} removeTodo={removeTodo} />
-            ))}
-        </ul>
+        <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+            <ul style={{ listStyle: 'none' }}>
+                {todos.map(todo => (
+                    <Todo todo={todo} toggleComplete={toggleComplete} removeTodo={removeTodo} />
+                ))}
+            </ul>
+        </div>
     );
 }
 
