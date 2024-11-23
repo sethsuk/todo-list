@@ -1,5 +1,5 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import TodoForm from './Components/TodoForm.js';
 import TodoList from "./Components/TodoList.js";
@@ -10,6 +10,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 
 function App() {
   const [todos, setTodos] = useState([]);
+  const rootURL = "http://localhost:5000";
 
   const theme = createTheme({
     palette: {
@@ -30,30 +31,71 @@ function App() {
     typography: {
         fontFamily: "'DM Serif Text', serif",
     },
-});
+  });
+
+  function getTodo() {
+    fetch(`${rootURL}/getTodo`)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log('Todos fetched successfully:', data);
+
+      setTodos(data);
+    });
+  }
+
+  useEffect(() => {
+    getTodo();
+  }, []);
 
   function addTodo(todo) {
-    setTodos([...todos, todo]);
+    var call_body = todo
+
+    fetch(`${rootURL}/addTodo`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(call_body)
+    })
+    .then(() => {
+      getTodo()
+    })
   }
 
   function toggleComplete(id) {
-    setTodos(
-      todos.map(todo => {
-        if (todo.id === id) {
-          return {
-            ...todo,
-            completed: !todo.completed
-          };
-        } else {
-          return todo;
-        }
-      })
-    );
+    var call_body = {
+      "id": id
+    }
+
+    fetch(`${rootURL}/toggleTodo`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(call_body)
+    })
+    .then(() => {
+      getTodo()
+    })
+
+
   }
 
   function removeTodo(id) {
-    const newTodos = todos.filter((item) => item.id !== id);
-    setTodos(newTodos);
+    var call_body = {
+      "id": id
+    }
+
+    fetch(`${rootURL}/removeTodo`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(call_body)
+    })
+    .then(() => {
+      getTodo()
+    })
   }
 
   return (
