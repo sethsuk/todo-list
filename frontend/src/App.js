@@ -38,7 +38,11 @@ function App() {
   });
 
   function getTodo() {
-    fetch(`${rootURL}/getTodo`)
+    if (!logged_in || !username) {
+      return;
+    }
+
+    fetch(`${rootURL}/getTodo?username=${username}`)
     .then((response) => response.json())
     .then((data) => {
       console.log('Todos fetched successfully:', data);
@@ -47,12 +51,8 @@ function App() {
     });
   }
 
-  useEffect(() => {
-    getTodo();
-  }, []);
-
   function addTodo(todo) {
-    var call_body = todo
+    var call_body = {...todo, username}
 
     fetch(`${rootURL}/addTodo`, {
       method: "POST",
@@ -103,7 +103,14 @@ function App() {
   function handleLogin(user) {
     setUsername(user);
     setLogged_in(true);
+    getTodo();
   }
+
+  useEffect(() => {
+    if (logged_in && username) {
+      getTodo();
+    }
+  }, [logged_in, username]);
   
   return (
     <ThemeProvider theme={theme}>

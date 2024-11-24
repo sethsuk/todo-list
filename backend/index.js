@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import pool from './db.js';
 /*
 create an instance of an express application, which lets you do things such as 
 set API endpoints for URLs, specifying GET, POST, PUT, DELETE, and also start
@@ -11,50 +12,97 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-let todos = []
-
 app.get('/', (req, res) => {
   console.log('/ hello world')
   return res.status(200).send('Hello World!')
 })
 
-app.get('/getTodo', (req, res) => {
+app.get('/getTodo', async (req, res) => {
   console.log('/getTodo triggered')
-  return res.status(200).json(todos)
+
+  try {
+    const { username } = req.query;
+
+    if (!username) {
+      return res.status(400).json({error: "no username given"})
+    }
+
+    const todos = await pool.query(`
+      SELECT id, task, completed FROM task WHERE username=$1 ORDER BY id ASC;
+      `, [username])
+
+    return res.status(200).json(todos.rows)
+  } catch (err) {
+    return res.status(500).json({error: "server error"})
+  }
 })
 
-app.post('/addTodo', (req, res) => {
+app.post('/addTodo', async (req, res) => {
   console.log('/addTodo triggered')
 
-  console.log(`req: ${req.body}`)
+  try {
+    const { username, id, task, completed } = req.body;
 
-  todos.push(req.body)
-
-  return res.status(201).json({ message: 'Todo added successfully' })
-})
-
-app.post('/toggleTodo', (req, res) => {
-  console.log('/toggleTodo triggered')
-  const id = req.body["id"]
-
-  todos = todos.map((item) => {
-    if (item.id == id) {
-      return item.completed = {...item, "completed": !item.completed}
-    } else {
-      return item
+    if (!username || !id || !task || completed === undefined) {
+      return res.status(400).json({ error: 'Missing required fields' });
     }
-  })
 
-  return res.status(201).json({ message: 'Todo toggled successfully' })
+    await pool.query(`
+      INSERT INTO task (username, id, task, completed) VALUES ($1, $2, $3, $4);
+      `, [username, id, task, completed])
+
+      return res.status(201).json({ message: 'Todo added successfully' })
+  } catch (err) {
+    return res.status(500).json({error: "server error"})
+  }
 })
 
-app.post('/removeTodo', (req, res) => {
+app.post('/toggleTodo', async (req, res) => {
+  console.log('/toggleTodo triggered')
+
+  try {
+    const { id } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const current_completed = await pool.query(`
+      SELECT completed FROM task WHERE id=$1;
+      `, [id])
+
+    if (current_completed.rows.length == 0) {
+      return res.status(404).json({error: 'id not found'});
+    }
+
+    await pool.query(`
+      UPDATE task SET completed=$1 WHERE id=$2;
+      `, [!current_completed.rows[0].completed, id])
+
+    return res.status(201).json({ message: 'Todo updated successfully' })
+  } catch (err) {
+    return res.status(500).json({error: "server error"})
+  }
+})
+
+app.post('/removeTodo', async (req, res) => {
   console.log('/removeTodo triggered')
-  const id = req.body["id"]
 
-  todos = todos.filter((item) => item.id !== id)
+  try {
+    const { id } = req.body;
 
-  return res.status(201).json({ message: 'Todo removed successfully'})
+    if (!id) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    await pool.query(`
+      DELETE FROM task WHERE id=$1;
+      `, [id])
+
+    return res.status(201).json({ message: 'Todo removed successfully' })
+  } catch (err) {
+    return res.status(500).json({error: "server error"})
+  }
 })
 
 /*

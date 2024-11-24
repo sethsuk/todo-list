@@ -1,11 +1,12 @@
-import { Pool } from "pg";
+import pkg from "pg";
+const { Pool } = pkg;
 
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
-  database: 'task', 
+  database: 'tododb', 
   password: 'password',
   port: 5432,
 });
 
-module.exports = pool;
+export default pool;
