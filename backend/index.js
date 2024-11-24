@@ -28,7 +28,7 @@ app.get('/getTodo', async (req, res) => {
     }
 
     const todos = await pool.query(`
-      SELECT id, task, completed FROM task WHERE username=$1 ORDER BY id ASC;
+      SELECT id, task, completed FROM tasks WHERE username=$1 ORDER BY id ASC;
       `, [username])
 
     return res.status(200).json(todos.rows)
@@ -48,7 +48,7 @@ app.post('/addTodo', async (req, res) => {
     }
 
     await pool.query(`
-      INSERT INTO task (username, id, task, completed) VALUES ($1, $2, $3, $4);
+      INSERT INTO tasks (username, id, task, completed) VALUES ($1, $2, $3, $4);
       `, [username, id, task, completed])
 
       return res.status(201).json({ message: 'Todo added successfully' })
@@ -68,7 +68,7 @@ app.post('/toggleTodo', async (req, res) => {
     }
 
     const current_completed = await pool.query(`
-      SELECT completed FROM task WHERE id=$1;
+      SELECT completed FROM tasks WHERE id=$1;
       `, [id])
 
     if (current_completed.rows.length == 0) {
@@ -76,7 +76,7 @@ app.post('/toggleTodo', async (req, res) => {
     }
 
     await pool.query(`
-      UPDATE task SET completed=$1 WHERE id=$2;
+      UPDATE tasks SET completed=$1 WHERE id=$2;
       `, [!current_completed.rows[0].completed, id])
 
     return res.status(201).json({ message: 'Todo updated successfully' })
@@ -96,7 +96,7 @@ app.post('/removeTodo', async (req, res) => {
     }
 
     await pool.query(`
-      DELETE FROM task WHERE id=$1;
+      DELETE FROM tasks WHERE id=$1;
       `, [id])
 
     return res.status(201).json({ message: 'Todo removed successfully' })
