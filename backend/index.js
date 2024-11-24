@@ -33,7 +33,7 @@ app.get('/getTodo', async (req, res) => {
 
     return res.status(200).json(todos.rows)
   } catch (err) {
-    return res.status(500).json({error: "server error"})
+    return res.status(500).json({error: `${err}: server error`})
   }
 })
 
