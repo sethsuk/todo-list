@@ -115,9 +115,9 @@ which is used very often to play around with your software before you deploy it 
 3rd argument: function --> in the example, this function takes in no arguments, it just logs a message to the terminal
 to let us know that our server is running. It can do other things as well. 
 */
-const port = 5000
-const host = 'localhost'
-app.listen(port, host, () => {
+const port = process.env.PORT || 3000
+
+app.listen(port, '0.0.0.0', () => {
   console.log(`App listening on port ${port}`)
 })
 
