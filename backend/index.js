@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-
 /*
 create an instance of an express application, which lets you do things such as 
 set API endpoints for URLs, specifying GET, POST, PUT, DELETE, and also start

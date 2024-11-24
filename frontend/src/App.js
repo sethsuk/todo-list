@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 
 import TodoForm from './Components/TodoForm.js';
 import TodoList from "./Components/TodoList.js";
+import Login from './Components/Login.js';
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -10,6 +11,9 @@ import CssBaseline from "@mui/material/CssBaseline";
 
 function App() {
   const [todos, setTodos] = useState([]);
+  const [username, setUsername] = useState('');
+  const [logged_in, setLogged_in] = useState(false);
+
   const rootURL = "http://localhost:5000";
 
   const theme = createTheme({
@@ -77,8 +81,6 @@ function App() {
     .then(() => {
       getTodo()
     })
-
-
   }
 
   function removeTodo(id) {
@@ -98,18 +100,32 @@ function App() {
     })
   }
 
+  function handleLogin(user) {
+    setUsername(user);
+    setLogged_in(true);
+  }
+  
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className="App">
         <header className="App-header">
-          <p>React Todo</p>
-          <TodoForm addTodo={addTodo} />
-          <TodoList todos={todos} toggleComplete={toggleComplete} removeTodo={removeTodo}/>
+          <h1>React Todo</h1>
         </header>
+  
+        <main>
+          {logged_in ? (
+            <>
+              <TodoForm addTodo={addTodo} />
+              <TodoList todos={todos} toggleComplete={toggleComplete} removeTodo={removeTodo} />
+            </>
+          ) : (
+            <Login onLogin={handleLogin} />
+          )}
+        </main>
       </div>
     </ThemeProvider>
-  );
+  );  
 }
 
 export default App;
