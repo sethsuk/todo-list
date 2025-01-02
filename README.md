@@ -4,4 +4,4 @@ This project was created using Node.js for the backend and React with Material U
 
 ## Live Website
 
-Access the live website [here](https://sethsuk.github.io/todo-list/)!
+~~Access the live website [here](https://sethsuk.github.io/todo-list/)!~~ The database hosting service was terminated. The site is no longer functional :(
